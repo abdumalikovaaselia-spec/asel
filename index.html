@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>PinkRubric 10 — Оқушы/Мұғалім (дискриптор + рефлексия)</title>
+  <style>
+    :root{
+      --bg0:#120018; --bg1:#1b0024;
+      --card: rgba(255,255,255,.10); --stroke: rgba(255,255,255,.16);
+      --text:#fff1fb; --muted: rgba(255,241,251,.75);
+      --pink:#ff4fb6; --rose:#ff7ac8; --lilac:#b78bff; --cyan:#38d9ff;
+      --mint:#54f2b7; --warn:#ffcc66; --bad:#ff4b4b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 800px at 10% 10%, rgba(255,79,182,.28), transparent 55%),
+        radial-gradient(1000px 700px at 85% 18%, rgba(183,139,255,.25), transparent 55%),
+        radial-gradient(1000px 700px at 60% 95%, rgba(56,217,255,.16), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      padding:14px 14px 12px;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(18,0,24,.88), rgba(18,0,24,.35));
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .top{max-width:1200px;margin:0 auto;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:46px;height:46px;border-radius:16px;
+      background: conic-gradient(from 200deg, var(--pink), var(--lilac), var(--cyan), var(--rose), var(--pink));
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow:0 16px 45px rgba(0,0,0,.38);
+      display:grid;place-items:center;font-weight:1000;
+    }
+    h1{margin:0;font-size:16px}
+    .sub{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.35}
+    .modebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .tag{
+      padding:8px 10px;border-radius:999px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:12px;font-weight:900;
+    }
+    button{border:0;border-radius:14px;padding:10px 12px;font-weight:1000; cursor:pointer;}
+    .btnPink{background: linear-gradient(90deg, var(--pink), var(--lilac)); color:#1a001f}
+    .btnGhost{background: rgba(255,255,255,.10); color:var(--text); border:1px solid rgba(255,255,255,.14)}
+    .btnBad{background: linear-gradient(90deg, #ff6b6b, var(--bad)); color:#240006}
+
+    .wrap{max-width:1200px;margin:16px auto;padding:0 14px 28px}
+    .grid{display:grid;gap:14px;grid-template-columns:1fr}
+    @media(min-width:980px){.grid{grid-template-columns:1.05fr .95fr}}
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.06));
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 20px 70px rgba(0,0,0,.32);
+    }
+    .card h2{margin:0 0 10px;font-size:14px}
+    .tiny{font-size:12px;color:var(--muted);line-height:1.35}
+    label{display:block;font-size:12px;color:rgba(255,255,255,.88);margin:10px 0 6px}
+    input, textarea{
+      width:100%;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.14);
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 11px;
+      font-size:14px;
+      outline:none;
+    }
+    input:focus, textarea:focus{
+      border-color: rgba(255,79,182,.55);
+      box-shadow: 0 0 0 4px rgba(255,79,182,.12);
+    }
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .pillbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      padding:9px 10px;border-radius:999px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      font-weight:1000;font-size:13px;
+    }
+    .pill.good{border-color: rgba(84,242,183,.35)}
+    .pill.warn{border-color: rgba(255,204,102,.35)}
+    .pill.bad{border-color: rgba(255,75,75,.35)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace}
+
+    .rubric{margin-top:10px;display:grid; gap:10px;}
+    .crit{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.14);
+      border-radius:16px;
+      padding:10px;
+    }
+    .critHead{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+    .critTitle{font-weight:1000}
+    .critMax{font-size:12px;color:var(--muted)}
+    .desc{margin-top:10px;display:grid; gap:8px;}
+    .descItem{
+      display:grid;
+      grid-template-columns: 22px 1fr 60px;
+      gap:10px; align-items:start;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+    }
+    .descItem input[type="checkbox"]{width:18px;height:18px;margin-top:2px}
+    .pts{font-weight:1000;text-align:right;opacity:.95}
+    .missing{
+      margin-top:10px;
+      border:1px dashed rgba(255,255,255,.20);
+      border-radius:16px;
+      padding:10px;
+      background: rgba(0,0,0,.12);
+    }
+    .missing ul{margin:8px 0 0 18px;padding:0}
+    .missing li{margin:6px 0;color:rgba(255,241,251,.90)}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:8px 6px;font-size:12px;text-align:left;vertical-align:top}
+    th{color:rgba(255,255,255,.72);text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+    .linkbtn{
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      padding:6px 8px;border-radius:12px;font-weight:1000;font-size:12px;cursor:pointer;
+    }
+    footer{opacity:.75;font-size:12px;padding:14px 14px 24px;text-align:center}
+    .split{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:720px){.split{grid-template-columns:1fr 1fr}}
+    .hintPink{color:rgba(255,122,200,.95);font-weight:900}
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="top">
+    <div class="brand">
+      <div class="logo">PR</div>
+      <div>
+        <h1>PinkRubric 10 — Оқушы/Мұғалім (дискриптор + рефлексия)</h1>
+        <div class="sub">Оқушы дискрипторларды ✅ белгілейді → жүйе 9 баллға дейін есептейді + рефлексия толық болса +1 → жалпы /10. Мұғалім бекітеді.</div>
+      </div>
+    </div>
+
+    <div class="modebar">
+      <span class="tag" id="modeTag">MODE: ОҚУШЫ</span>
+      <button class="btnGhost" id="teacherBtn">Teacher Mode</button>
+      <button class="btnGhost" id="logoutBtn" style="display:none">Шығу</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+
+    <!-- LEFT -->
+    <div class="card">
+      <h2 id="panelTitle">1) Оқушы панелі</h2>
+      <div class="tiny" id="panelHint">Оқушы: дискрипторларды өзі белгілейді. Соңында рефлексия толтырса +1 балл автомат қосылады.</div>
+
+      <div class="row2">
+        <div>
+          <label>Оқушының аты-жөні</label>
+          <input id="student" placeholder="Мысалы: Димаш"/>
+        </div>
+        <div>
+          <label>Сынып</label>
+          <input id="clazz" placeholder="Мысалы: 9A"/>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h2>2) Дискриптор бойынша өзін-өзі бағалау (9 балл)</h2>
+        <div class="tiny">✅ белгілеген дискрипторлардың ұпайы қосылады. Бұл бөлім ең көбі <b>9 балл</b> береді.</div>
+        <div id="rubricView" class="rubric"></div>
+
+        <div class="pillbar">
+          <div class="pill"><span class="mini">Дискриптор ұпайы:</span> <b id="score9">0</b>/9</div>
+          <div class="pill warn"><span class="mini">Жалпы (қазір):</span> <b id="total10live">0</b>/10</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h2>3) Рефлексия (1 балл)</h2>
+        <div class="tiny">
+          Егер 3 жол да толса → <span class="hintPink">+1 балл</span> автомат қосылады.
+        </div>
+
+        <div class="split">
+          <div>
+            <label>Мен бүгін түсіндім…</label>
+            <input id="r1" placeholder="Қысқа жауап"/>
+          </div>
+          <div>
+            <label>Маған қиын болды…</label>
+            <input id="r2" placeholder="Қай жер?"/>
+          </div>
+        </div>
+        <label>Келесі қадамым (Next)…</label>
+        <input id="r3" placeholder="1 әрекет"/>
+
+        <div class="pillbar">
+          <div class="pill" id="refPill"><span class="mini">Рефлексия:</span> <b id="ref1">0</b>/1</div>
+        </div>
+      </div>
+
+      <div class="row2" style="margin-top:10px">
+        <button class="btnPink" id="submitBtn">Жіберу (сақтау)</button>
+        <button class="btnGhost" id="clearBtn">Тазалау</button>
+      </div>
+
+      <!-- TEACHER ONLY -->
+      <div class="card" id="teacherArea" style="margin-top:12px; display:none">
+        <h2>4) Мұғалім бекітуі</h2>
+        <div class="tiny">
+          Мұғалім: оқушы белгілерін қарайды, керек болса түзетеді, соңында <b>БЕКІТУ</b> басады.
+          Бекітілген соң тізімде баға көрінеді.
+        </div>
+
+        <label>Мұғалім пікірі (қысқа кері байланыс)</label>
+        <textarea id="teacherNote" rows="3" placeholder="Мысалы: Формуланы дұрыс таңдадың, SI бірлікті мұқият тексер."></textarea>
+
+        <div class="pillbar">
+          <div class="pill warn" id="statusPill"><span class="mono" id="statusText">Күтіп тұр ⏳</span></div>
+          <div class="pill"><span class="mini">Бекітілетін баға:</span> <b id="final10">—</b>/10</div>
+        </div>
+
+        <div class="missing" id="missingBox" style="display:none">
+          <b>Белгіленбеген дискрипторлар (қайдан балл алмады):</b>
+          <ul id="missingList"></ul>
+        </div>
+
+        <div class="row2" style="margin-top:10px">
+          <button class="btnPink" id="approveBtn">Бекіту (баға қою)</button>
+          <button class="btnBad" id="wipeBtn">Барлығын өшіру</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="card">
+      <h2>Оқушылар тізімі (мұғалім көреді)</h2>
+      <div class="tiny">Teacher Mode-та “Қарау” арқылы оқушыны ашып, түзетіп/бекітесің.</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Оқушы</th>
+            <th>Сынып</th>
+            <th>Статус</th>
+            <th>Баға</th>
+            <th>Әрекет</th>
+          </tr>
+        </thead>
+        <tbody id="list"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<footer>PinkRubric 10 • Student self-check + Reflection(+1) • Teacher approve • 2026</footer>
+
+<script>
+  // -----------------------------
+  // Русские комменты (как ты просила)
+  // -----------------------------
+
+  const TEACHER_PIN = "2026";
+  const KEY_REC = "pr10_self_records_v1";
+
+  const $ = (id)=>document.getElementById(id);
+  const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+  const nowStamp = ()=> new Date().toISOString().slice(0,19).replace("T"," ");
+  const rid = ()=> "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+
+  function esc(s){
+    return String(s ?? "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function loadRec(){ try{return JSON.parse(localStorage.getItem(KEY_REC)||"[]")}catch(e){return[]} }
+  function saveRec(arr){ localStorage.setItem(KEY_REC, JSON.stringify(arr)); }
+
+  let isTeacher=false;
+  let currentId=null;
+
+  // --- Рубрика (по твоим дескрипторам) ---
+  // Идея: Дескрипторы дают максимум 9 баллов, рефлексия +1 => 10
+  const rubric = {
+    lesson: "Еркін түсу үдеуі (g)",
+    criteria: [
+      { name: "Теория және түсіну", max: 3, desc: [
+        {t:"Еркін түсу ұғымын тұжырымдайды.", p:1},
+        {t:"Қозғалыс бағытына байланысты орын ауыстыру мен жылдамдықтың формулаларын сәйкестендіре алады.", p:2},
+      ]},
+      { name: "Кинематика және формулалар", max: 3, desc: [
+        {t:"Еркін түсуді сипаттайтын теңайнымалы қозғалыстың кинематикалық теңдеулерін қолдана алады.", p:1},
+        {t:"Жүріп өткен жолды анықтау формуласын біледі.", p:1},
+        {t:"Уақытты анықтау формуласын түрлендіреді және есептейді.", p:1},
+      ]},
+      { name: "Есептеу дағдысы", max: 3, desc: [
+        {t:"Бастапқы жылдамдық арқылы орын ауыстыруды анықтай алады.", p:3},
+      ]},
+    ]
+  };
+
+  function computeScore9(checkedMap){
+    // Сум + ограничение по каждому критерию и общий максимум 9
+    let total=0;
+    rubric.criteria.forEach((c,ci)=>{
+      let sum=0;
+      c.desc.forEach((d,di)=>{
+        const key = `${ci}:${di}`;
+        if(checkedMap[key]) sum += Number(d.p)||0;
+      });
+      sum = Math.min(sum, Number(c.max)||0);
+      total += sum;
+    });
+    total = Math.min(9, Math.max(0,total));
+    return total;
+  }
+
+  function reflectionPoint(){
+    const a=$("r1").value.trim(), b=$("r2").value.trim(), c=$("r3").value.trim();
+    const ok = (a.length>0 && b.length>0 && c.length>0);
+    $("ref1").textContent = ok ? "1" : "0";
+    $("refPill").classList.remove("good","warn");
+    $("refPill").classList.add(ok ? "good" : "warn");
+    return ok ? 1 : 0;
+  }
+
+  function recFromForm(){
+    const checkedMap = {};
+    document.querySelectorAll("input[data-dkey]").forEach(cb=>{
+      checkedMap[cb.getAttribute("data-dkey")] = cb.checked;
+    });
+
+    const s9 = computeScore9(checkedMap);
+    const r1 = reflectionPoint();
+    const total10 = clamp(s9 + r1, 0, 10);
+
+    return {
+      student: $("student").value.trim(),
+      clazz: $("clazz").value.trim(),
+      ts: nowStamp(),
+      checkedMap,
+      score9: s9,
+      ref1: r1,
+      total10_live: total10,
+      r: {a:$("r1").value||"", b:$("r2").value||"", c:$("r3").value||""}
+    };
+  }
+
+  function renderRubric(checkedMap){
+    const wrap=$("rubricView");
+    wrap.innerHTML="";
+
+    rubric.criteria.forEach((c,ci)=>{
+      const box=document.createElement("div");
+      box.className="crit";
+      box.innerHTML = `
+        <div class="critHead">
+          <div class="critTitle">${esc(c.name)}</div>
+          <div class="critMax">Max: ${esc(c.max)} (осы критерий)</div>
+        </div>
+      `;
+      const dwrap=document.createElement("div");
+      dwrap.className="desc";
+
+      c.desc.forEach((d,di)=>{
+        const key = `${ci}:${di}`;
+        const item=document.createElement("div");
+        item.className="descItem";
+
+        const cb=document.createElement("input");
+        cb.type="checkbox";
+        cb.setAttribute("data-dkey", key);
+        cb.checked = !!checkedMap?.[key];
+
+        // Оқушы да, мұғалім де өзгерте алады (мұғалім қарап түзетсін деп)
+        cb.addEventListener("change", refreshLive);
+
+        const text=document.createElement("div");
+        text.innerHTML = `<b>${esc(d.t)}</b><div class="tiny">Оқушы белгілейді ✅</div>`;
+
+        const pts=document.createElement("div");
+        pts.className="pts";
+        pts.textContent = (Number(d.p)||0) + " б";
+
+        item.appendChild(cb);
+        item.appendChild(text);
+        item.appendChild(pts);
+        dwrap.appendChild(item);
+      });
+
+      box.appendChild(dwrap);
+      wrap.appendChild(box);
+    });
+  }
+
+  function refreshLive(){
+    const checkedMap = {};
+    document.querySelectorAll("input[data-dkey]").forEach(cb=>{
+      checkedMap[cb.getAttribute("data-dkey")] = cb.checked;
+    });
+
+    const s9 = computeScore9(checkedMap);
+    const r1 = reflectionPoint();
+    const t10 = clamp(s9 + r1, 0, 10);
+
+    $("score9").textContent = String(s9);
+    $("total10live").textContent = String(t10);
+
+    // Teacher area preview
+    if(isTeacher){
+      $("final10").textContent = String(t10);
+      renderMissing(checkedMap);
+    }
+  }
+
+  function renderMissing(checkedMap){
+    const ul=$("missingList");
+    ul.innerHTML="";
+    const missed=[];
+    rubric.criteria.forEach((c,ci)=>{
+      c.desc.forEach((d,di)=>{
+        const key=`${ci}:${di}`;
+        if(!checkedMap[key]) missed.push(`${c.name}: ${d.t}`);
+      });
+    });
+
+    if(missed.length===0){
+      $("missingBox").style.display="none";
+      return;
+    }
+    $("missingBox").style.display="";
+    missed.slice(0,15).forEach(t=>{
+      const li=document.createElement("li");
+      li.textContent=t;
+      ul.appendChild(li);
+    });
+  }
+
+  function submitStudent(){
+    const rec = recFromForm();
+    if(!rec.student){ alert("Оқушы аты-жөнін енгіз."); return; }
+
+    const all=loadRec();
+    const idx=all.findIndex(x=>x.id===currentId);
+    const base = (idx>=0 ? {...all[idx]} : {id:rid(), graded:false, total10:null, teacherNote:""});
+
+    base.student = rec.student;
+    base.clazz = rec.clazz;
+    base.ts = base.ts || rec.ts;
+    base.checkedMap = rec.checkedMap;
+    base.score9 = rec.score9;
+    base.ref1 = rec.ref1;
+    base.total10_live = rec.total10_live;
+    base.r = rec.r;
+
+    // статус не бекітілген
+    if(!base.graded){
+      base.total10 = null;
+    }
+
+    if(idx>=0) all[idx]=base; else all.push(base);
+    saveRec(all);
+    currentId = base.id;
+    renderList();
+    alert("Жіберілді ✅ (Мұғалім бекіткен соң баға қойылады)");
+  }
+
+  function approveTeacher(){
+    if(!isTeacher){ alert("Teacher Mode керек."); return; }
+    const all=loadRec();
+    const idx=all.findIndex(x=>x.id===currentId);
+    if(idx<0){ alert("Тізімнен оқушыны аш (Қарау)."); return; }
+
+    // Берем актуальный live total
+    const checkedMap = {};
+    document.querySelectorAll("input[data-dkey]").forEach(cb=>{
+      checkedMap[cb.getAttribute("data-dkey")] = cb.checked;
+    });
+    const s9 = computeScore9(checkedMap);
+    const r1 = reflectionPoint();
+    const t10 = clamp(s9 + r1, 0, 10);
+
+    const rec = {...all[idx]};
+    rec.checkedMap = checkedMap;
+    rec.score9 = s9;
+    rec.ref1 = r1;
+    rec.total10_live = t10;
+    rec.teacherNote = $("teacherNote").value || "";
+    rec.total10 = t10;
+    rec.graded = true;
+    rec.graded_ts = nowStamp();
+
+    all[idx]=rec;
+    saveRec(all);
+
+    $("statusText").textContent="Бағаланды ✅";
+    $("statusPill").classList.remove("warn","bad"); $("statusPill").classList.add("good");
+    $("final10").textContent=String(t10);
+
+    renderList();
+    alert("Бекітілді ✅");
+  }
+
+  function clearForm(){
+    currentId=null;
+    $("student").value=""; $("clazz").value="";
+    $("r1").value=""; $("r2").value=""; $("r3").value="";
+    $("teacherNote").value="";
+    renderRubric({});
+    $("score9").textContent="0";
+    $("total10live").textContent="0";
+    $("final10").textContent="—";
+    $("missingBox").style.display="none";
+    $("missingList").innerHTML="";
+    $("statusText").textContent="Күтіп тұр ⏳";
+    $("statusPill").classList.remove("good","bad"); $("statusPill").classList.add("warn");
+    reflectionPoint();
+  }
+
+  function renderList(){
+    const arr=loadRec().slice().reverse();
+    const tbody=$("list");
+    tbody.innerHTML="";
+    if(arr.length===0){
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td colspan="5" class="tiny">Әзірге жазба жоқ.</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    arr.forEach((r,i)=>{
+      const status = r.graded ? "Бағаланды" : "Күтіп тұр";
+      const grade = r.graded ? (r.total10 ?? "—") : "—";
+      const tr=document.createElement("tr");
+      tr.innerHTML=`
+        <td><b>${esc(r.student||"—")}</b><div class="tiny">${esc(r.ts||"")}</div></td>
+        <td>${esc(r.clazz||"—")}</td>
+        <td>${status}</td>
+        <td><b>${grade}</b>/10</td>
+        <td><button class="linkbtn" data-i="${i}">Қарау</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll("button[data-i]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const viewIndex=parseInt(btn.getAttribute("data-i"),10);
+        const all=loadRec();
+        const real=all[all.length-1-viewIndex];
+        if(!real) return;
+        currentId = real.id;
+
+        $("student").value = real.student || "";
+        $("clazz").value = real.clazz || "";
+        $("r1").value = real.r?.a || "";
+        $("r2").value = real.r?.b || "";
+        $("r3").value = real.r?.c || "";
+        $("teacherNote").value = real.teacherNote || "";
+
+        renderRubric(real.checkedMap || {});
+        refreshLive();
+
+        if(isTeacher){
+          $("teacherArea").style.display="";
+          if(real.graded){
+            $("statusText").textContent="Бағаланды ✅";
+            $("statusPill").classList.remove("warn","bad"); $("statusPill").classList.add("good");
+            $("final10").textContent=String(real.total10 ?? real.total10_live ?? "—");
+          }else{
+            $("statusText").textContent="Күтіп тұр ⏳";
+            $("statusPill").classList.remove("good","bad"); $("statusPill").classList.add("warn");
+            $("final10").textContent=String(real.total10_live ?? "—");
+          }
+        }
+        window.scrollTo({top:0,behavior:"smooth"});
+      });
+    });
+  }
+
+  function setMode(teacher){
+    isTeacher=teacher;
+    $("modeTag").textContent = teacher ? "MODE: МҰҒАЛІМ" : "MODE: ОҚУШЫ";
+    $("logoutBtn").style.display = teacher ? "" : "none";
+    $("teacherArea").style.display = teacher ? "" : "none";
+    $("panelTitle").textContent = teacher ? "Мұғалім панелі" : "Оқушы панелі";
+    $("panelHint").textContent = teacher
+      ? "Мұғалім: тізімнен оқушыны ашып, дискриптор белгілерін тексеріп, соңында Бекіту басады."
+      : "Оқушы: дискрипторларды өзі белгілейді. Рефлексия толық болса +1 балл қосылады.";
+
+    refreshLive();
+    renderList();
+  }
+
+  // EVENTS
+  $("submitBtn").addEventListener("click", submitStudent);
+  $("clearBtn").addEventListener("click", clearForm);
+  ["r1","r2","r3"].forEach(id=> $(id).addEventListener("input", refreshLive));
+
+  $("teacherBtn").addEventListener("click", ()=>{
+    const pin = prompt("Teacher PIN енгіз:");
+    if(pin===TEACHER_PIN) setMode(true);
+    else alert("PIN қате ❌");
+  });
+  $("logoutBtn").addEventListener("click", ()=> setMode(false));
+
+  $("approveBtn").addEventListener("click", approveTeacher);
+
+  $("wipeBtn").addEventListener("click", ()=>{
+    if(!isTeacher) return;
+    if(confirm("Барлық оқушы жазбасын өшірейін бе?")){
+      localStorage.removeItem(KEY_REC);
+      renderList();
+      clearForm();
+    }
+  });
+
+  // INIT
+  renderRubric({});
+  reflectionPoint();
+  refreshLive();
+  renderList();
+  setMode(false);
+</script>
+</body>
+</html>
+  
+   
